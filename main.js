@@ -30,19 +30,19 @@ async function verificar() {
 }
 
 
-cron.schedule('0 10 * * *', async () => {
+cron.schedule('0 10 * * 1-5', async () => {
   await enviarMensagem(
     `Fazendo a primeira verificação do dia...`
   );
   await verificar();
 });
-cron.schedule('0 12 * * *', async () => {
+cron.schedule('0 12 * * 1-5', async () => {
   await verificar();
 });
-cron.schedule('0 16 * * *', async () => {
+cron.schedule('0 16 * * 1-5', async () => {
   await verificar();
 });
-cron.schedule('30 17 * * *', async () => {
+cron.schedule('30 17 * * 1-5', async () => {
   await verificar();
 });
 
