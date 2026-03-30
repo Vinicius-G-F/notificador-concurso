@@ -30,19 +30,53 @@ async function verificar() {
 }
 
 
-cron.schedule('0 10 * * 1-5', async () => {
+let rodarPrimeiroHorario = true;
+let rodarSegundoHorario = true;
+let rodarTerceiroHorario = true;
+let rodarQuartoHorario = true;
+
+
+cron.schedule('*/5 10 * * 1-5', async () => {
+  if(!rodarPrimeiroHorario){
+    return
+  }
   await enviarMensagem(
     `Fazendo a primeira verificação do dia...`
   );
   await verificar();
-});
-cron.schedule('0 12 * * 1-5', async () => {
-  await verificar();
-});
-cron.schedule('0 16 * * 1-5', async () => {
-  await verificar();
-});
-cron.schedule('30 17 * * 1-5', async () => {
-  await verificar();
-});
 
+  rodarPrimeiroHorario = false;
+  rodarSegundoHorario = true;
+  rodarTerceiroHorario = true;
+  rodarQuartoHorario = true;
+});
+cron.schedule('*/5 12 * * 1-5', async () => {
+  if(!rodarSegundoHorario){
+    return
+  }
+  await verificar();
+  rodarPrimeiroHorario = true;
+  rodarSegundoHorario = false;
+  rodarTerceiroHorario = true;
+  rodarQuartoHorario = true;
+});
+cron.schedule('*/5 16 * * 1-5', async () => {
+  if(!rodarTerceiroHorario){
+    return
+  }
+  await verificar();
+  rodarPrimeiroHorario = true;
+  rodarSegundoHorario = true;
+  rodarTerceiroHorario = false;
+  rodarQuartoHorario = true;
+});
+cron.schedule('*/5 18 * * 1-5', async () => {
+  if(!rodarQuartoHorario){
+    return
+  }
+  await verificar();
+  rodarPrimeiroHorario = true;
+  rodarSegundoHorario = true;
+  rodarTerceiroHorario = true;
+  rodarQuartoHorario = false;
+});
