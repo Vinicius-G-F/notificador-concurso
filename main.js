@@ -29,54 +29,27 @@ async function verificar() {
   }
 }
 
+const horarios = ["10:00", "12:00", "16:00", "18:00"];
+let ultimaExecucao = null;
 
-let rodarPrimeiroHorario = true;
-let rodarSegundoHorario = true;
-let rodarTerceiroHorario = true;
-let rodarQuartoHorario = true;
+cron.schedule("*/5 * * * 1-5", async () => {
+  const agora = new Date();
+  const horaAtual = agora.toTimeString().slice(0,5); // HH:MM
+  const dataAtual = agora.toISOString().slice(0,10); // YYYY-MM-DD
 
+  if (!horarios.includes(horaAtual)) return;
 
-cron.schedule('*/5 10 * * 1-5', async () => {
-  if(!rodarPrimeiroHorario){
-    return
-  }
-  await enviarMensagem(
-    `Fazendo a primeira verificação do dia...`
-  );
-  await verificar();
+  const chaveExecucao = `${dataAtual}-${horaAtual}`;
 
-  rodarPrimeiroHorario = false;
-  rodarSegundoHorario = true;
-  rodarTerceiroHorario = true;
-  rodarQuartoHorario = true;
-});
-cron.schedule('*/5 12 * * 1-5', async () => {
-  if(!rodarSegundoHorario){
-    return
+  if (ultimaExecucao === chaveExecucao) return;
+
+  ultimaExecucao = chaveExecucao;
+
+  if (horaAtual === "10:00") {
+    await enviarMensagem("Fazendo a primeira verificação do dia...");
   }
+
   await verificar();
-  rodarPrimeiroHorario = true;
-  rodarSegundoHorario = false;
-  rodarTerceiroHorario = true;
-  rodarQuartoHorario = true;
 });
-cron.schedule('*/5 16 * * 1-5', async () => {
-  if(!rodarTerceiroHorario){
-    return
-  }
-  await verificar();
-  rodarPrimeiroHorario = true;
-  rodarSegundoHorario = true;
-  rodarTerceiroHorario = false;
-  rodarQuartoHorario = true;
-});
-cron.schedule('*/5 18 * * 1-5', async () => {
-  if(!rodarQuartoHorario){
-    return
-  }
-  await verificar();
-  rodarPrimeiroHorario = true;
-  rodarSegundoHorario = true;
-  rodarTerceiroHorario = true;
-  rodarQuartoHorario = false;
-});
+
+enviarMensagem("mensagem de teste.");
