@@ -1,12 +1,12 @@
 const cron = require('node-cron');
 const contarConvocados = require('./scraper');
-const {enviarMensagemWhatsApp, enviarMensagemTelegram} = require('./notifier');
+const { enviarMensagemWhatsApp, enviarMensagemTelegram } = require('./notifier');
 const fs = require('fs');
 
 const ARQUIVO = './estado.json';
 async function enviarMensagem(mensagem) {
-  enviarMensagemWhatsApp(mensagem);
-  enviarMensagemTelegram(mensagem);
+  await enviarMensagemWhatsApp(mensagem);
+  await enviarMensagemTelegram(mensagem);
 }
 // Função principal
 async function verificar() {
@@ -21,13 +21,13 @@ async function verificar() {
   // Comparação simples
   if (JSON.stringify(resultadoAtual) !== JSON.stringify(resultadoAnterior)) {
     console.log('Mudança detectada!');
-    try{
+    try {
       await enviarMensagem(
         `🚨 ALTERAÇÃO DETECTADA!\n\n${JSON.stringify(resultadoAtual, null, 2)}`
       );
       fs.writeFileSync(ARQUIVO, JSON.stringify(resultadoAtual));
     }
-    catch(e){
+    catch (e) {
       console.error(e);
     }
   } else {
@@ -40,8 +40,8 @@ let ultimaExecucao = null;
 
 cron.schedule("*/5 * * * 1-5", async () => {
   const agora = new Date();
-  const horaAtual = agora.toTimeString().slice(0,5); // HH:MM
-  const dataAtual = agora.toISOString().slice(0,10); // YYYY-MM-DD
+  const horaAtual = agora.toTimeString().slice(0, 5); // HH:MM
+  const dataAtual = agora.toISOString().slice(0, 10); // YYYY-MM-DD
 
   if (!horarios.includes(horaAtual)) return;
 

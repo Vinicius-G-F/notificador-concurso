@@ -1,5 +1,5 @@
 require('dotenv').config();
-const {Telegraf} = require('telegraf');
+const { Telegraf } = require('telegraf');
 
 const twilio = require('twilio');
 const client = twilio(
