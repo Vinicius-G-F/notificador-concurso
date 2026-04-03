@@ -1,10 +1,13 @@
 const cron = require('node-cron');
 const contarConvocados = require('./scraper');
-const enviarMensagem = require('./notifier');
+const {enviarMensagemWhatsApp, enviarMensagemTelegram} = require('./notifier');
 const fs = require('fs');
 
 const ARQUIVO = './estado.json';
-
+async function enviarMensagem(mensagem) {
+  enviarMensagemWhatsApp(mensagem);
+  enviarMensagemTelegram(mensagem);
+}
 // Função principal
 async function verificar() {
   const resultadoAtual = await contarConvocados();
@@ -18,12 +21,15 @@ async function verificar() {
   // Comparação simples
   if (JSON.stringify(resultadoAtual) !== JSON.stringify(resultadoAnterior)) {
     console.log('Mudança detectada!');
-
-    await enviarMensagem(
-      `🚨 ALTERAÇÃO DETECTADA!\n\n${JSON.stringify(resultadoAtual, null, 2)}`
-    );
-
-    fs.writeFileSync(ARQUIVO, JSON.stringify(resultadoAtual));
+    try{
+      await enviarMensagem(
+        `🚨 ALTERAÇÃO DETECTADA!\n\n${JSON.stringify(resultadoAtual, null, 2)}`
+      );
+      fs.writeFileSync(ARQUIVO, JSON.stringify(resultadoAtual));
+    }
+    catch(e){
+      console.error(e);
+    }
   } else {
     console.log('Nenhuma mudança.');
   }
@@ -51,5 +57,4 @@ cron.schedule("*/5 * * * 1-5", async () => {
 
   await verificar();
 });
-
-enviarMensagem("mensagem de teste.");
+enviarMensagem("mensagem de teste!");
